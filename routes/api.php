@@ -2,7 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Contorollers\TodoItemController;
+use App\Http\Controllers\TodoItemController;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,11 +18,16 @@ use App\Http\Contorollers\TodoItemController;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
-Route::resource('todos',TodoItemController::class, ['only' => [
-    'index',
-    'store',
-    'show',
-    'edit',
-    'update',
-    'destroy',
-]]);
+
+Route::group(['middleware' => ['auth:sanctum']], function () {
+    Route::resource('todos', TodoItemController::class, ['only' => [
+        'index',
+        'store',
+        'show',
+        'edit',
+        'update',
+        'destroy',
+    ]]);
+    Route::patch('todos/{todo}/done',[TodoItemController::class, 'done']);
+    Route::patch('todos/{todo}/undone',[TodoItemController::class,'undone']);
+});
